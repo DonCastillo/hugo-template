@@ -1,0 +1,67 @@
+{{$serviceType          :=  .Params.service_type}}
+{{$pageImage            :=  .Params.page_image}}
+{{$siteUrl              :=  $.Site.BaseURL}}
+{{$businessName         :=  $.Site.Data.companyprofile.business_name}}
+{{$phone                :=  $.Site.Data.contact.order_desk_phone}}
+{{$fax                  :=  $.Site.Data.contact.fax}}
+{{$description          :=  .Params.description}}
+
+
+{{range (where $.Site.RegularPages "Section" "locations")}}
+    {{  $typeF     :=     (jsonify "@type") }}
+    {{  $area      :=     (jsonify "Area") }}
+    {{  $nameF     :=     (jsonify "name") }}
+    {{  $title     :=     (jsonify .Title) }}
+    {{  $idF       :=     (jsonify "@id") }}
+    {{  $id        :=     (jsonify (printf "%s%s" $siteUrl .URL)) }}
+    {{  $location  :=     (printf  "{ %s:%s, %s:%s, %s:%s }" $typeF $area $nameF $title $idF $id )  }}
+    {{$.Scratch.SetInMap "locationMap" (string $title) $location}}
+{{end}}
+
+{{$locationJson := $.Scratch.Get "locationMap"}}
+
+<script type="application/ld+json" id="service">
+    {
+        "@context": "http://schema.org",
+        "@type": "Service",
+        "serviceType": "{{$serviceType}}",
+        "areaServed":
+         [
+            {{delimit $locationJson ", \n\t\t\t"}}
+         ],
+        "provider": {
+            "@type": "Organization",
+            "name": "{{$businessName}}",
+            "@id": "{{$siteUrl}}"
+        },
+        "availableChannel": {
+            "@type": "ServiceChannel",
+            "serviceUrl": "{{$siteUrl}}",
+            "servicePhone": {
+                "@type": "ContactPoint",
+                "telephone": "{{$phone}}",
+                "name": "{{$businessName}} Contact",
+                "faxNumber": "{{$fax}}",
+                "contactType": "customer service",
+                "areaServed":
+                 [
+                    {{delimit $locationJson ", \n\t\t\t\t\t"}}
+                 ]
+            },
+            "serviceLocation": "{{$siteUrl}}",
+            "name": "{{$businessName}} Contact",
+            "description": "Contact {{$businessName}}. ",
+            "@id": "{{$siteUrl}}"
+        },
+        "description": "{{ plainify ( markdownify  ( replace $description "\n" "") ) }}",
+        "image":
+         [
+            "{{$siteUrl}}{{$pageImage}}",
+            {
+                "@type": "ImageObject",
+                "url": "{{$siteUrl}}{{$pageImage}}",
+                "@id": "{{$siteUrl}}{{$pageImage}}"
+            }
+         ]
+    }
+</script>

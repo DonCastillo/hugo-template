@@ -1,0 +1,16 @@
+---
+image_position:
+- center center
+- top center
+- bottom center
+- center left
+- center right
+- top left
+- top right
+- bottom left
+- bottom right
+image_banner_height:
+- none
+- short
+- tall
+---

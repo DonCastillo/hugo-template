@@ -1,0 +1,45 @@
+{{$siteUrl      :=  $.Site.BaseURL}}
+{{$pageImage    := .Params.page_image}}
+
+
+{{if eq .URL "/"}}
+    {{$.Scratch.Set "keywords"      $.Site.Data.companyprofile.keywords}}
+    {{$.Scratch.Set "description"   $.Site.Data.companyprofile.description}}
+{{else}}
+    {{$.Scratch.Set "keywords"      .Params.tags}}
+    {{$.Scratch.Set "description"   .Summary}}
+{{end}}
+
+{{$keywords     :=  $.Scratch.Get  "keywords"}}
+{{$description  :=  $.Scratch.Get  "description"}}
+
+
+{{range $keywords}}
+    {{$keywordsMap := (jsonify .)}}
+    {{$.Scratch.SetInMap "keywordsMap" .  $keywordsMap}}
+{{end}}
+{{$keywordsJson := $.Scratch.Get "keywordsMap"}}
+
+
+{{range (where .Site.RegularPages "Section" .Section)}}
+    {{$relLink  :=  (printf "%s%s" $siteUrl .URL)}}
+    {{$.Scratch.SetInMap "relLinkMap" (urlize .Name)  (string (jsonify $relLink))}}
+{{end}}
+{{$relLinkJson := $.Scratch.Get "relLinkMap"}}
+
+
+<script type="application/ld+json" id="page">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebPage",
+        "name": "{{.Title}}",
+        "description": "{{ plainify ( markdownify ( replace $description "\n" "") ) }}",
+        "keywords": [ {{with $keywordsJson}}{{delimit . ", "}}{{end}} ],
+        "relatedLink":
+         [
+            {{with $relLinkJson}}{{delimit . ", "}}{{end}}
+         ],
+        "image": "{{$siteUrl}}{{$pageImage}}",
+        "url": "{{$siteUrl}}{{.URL}}"
+    }
+</script>

@@ -1,0 +1,66 @@
+{{$social :=  .Site.Data.contact.social_media}}
+{{$hours  :=  .Site.Data.companyprofile.opening_hours}}
+
+
+{{range $social}}
+    {{$name     := .name}}
+    {{$url      := (jsonify .url)}}
+    {{$.Scratch.SetInMap "socialMap" $name $url}}
+{{end}}
+{{$socialJson := $.Scratch.Get "socialMap"}}
+
+{{range $k, $v := $hours}}
+    {{$sched := (printf "%s %s" $k $v)}}
+    {{$.Scratch.SetInMap "hoursMap" $k (string (jsonify $sched))}}
+{{end}}
+{{$hoursJson := $.Scratch.Get "hoursMap"}}
+
+<script type="application/ld+json" id="general">
+    [
+        {
+            "@context": "http://schema.org",
+            "@type": "Organization",
+            "url": "{{.Site.BaseURL}}",
+            "name": "{{.Site.Data.companyprofile.business_name}}",
+            "logo": "{{.Site.BaseURL}}{{.Site.Data.companyprofile.business_logo}}",
+            "slogan": "{{.Site.Data.siteconfig.slogan}}",
+            "contactPoint":
+            {
+                "@type": "ContactPoint",
+                "contactType": "customer service",
+                "email": "{{.Site.Data.contact.email_address}}",
+                "telephone": "{{.Site.Data.contact.order_desk_phone}}"
+            },
+            "sameAs":
+            [
+                {{with $socialJson}}{{delimit . ", "}}{{end}}
+            ]
+
+        },
+        {
+            "@context": "http://schema.org",
+            "@type": "LocalBusiness",
+            "@id": "{{.Site.BaseURL}}",
+            "name": "{{.Site.Data.companyprofile.business_name}}",
+            "address":
+            {
+                "@type": "PostalAddress",
+                "streetAddress": "{{.Site.Data.contact.address.street}}",
+                "addressLocality": "{{.Site.Data.contact.address.city}}",
+                "addressRegion": "{{.Site.Data.contact.address.province}}",
+                "addressCountry": "{{.Site.Data.contact.address.country}}",
+                "postalCode": "{{.Site.Data.contact.address.postal_code}}"
+            },
+            "email": "{{.Site.Data.contact.email_address}}",
+            "telephone": "{{.Site.Data.contact.order_desk_phone}}",
+            "geo":
+            {
+                "@type": "GeoCoordinates",
+                "latitude": "{{.Site.Data.contact.geo_location.coordinates.lat}}",
+                "longitude": "{{.Site.Data.contact.geo_location.coordinates.long}}"
+            },
+            "openingHours": [{{with $hoursJson}}{{delimit . ", "}}{{end}}]
+
+        }
+    ]
+</script>
