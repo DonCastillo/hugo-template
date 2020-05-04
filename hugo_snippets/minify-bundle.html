@@ -1,0 +1,7 @@
+<!-- don't put assets in the static/ dir -->
+
+{{ $style        :=   resources.Get "css/style.css" }}
+{{ $responsive   :=   resources.Get "css/responsive.css" }}
+{{ $css          :=   slice $style $responsive | resources.Concat "css/css_bundle.css" | minify }}
+
+<link rel="stylesheet" media="all" type="text/css" href="{{ $css.RelPermalink }}">

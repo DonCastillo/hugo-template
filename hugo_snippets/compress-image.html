@@ -1,0 +1,9 @@
+{{ $bgImg  :=  .Params.image_background }}
+{{ $bgPos  :=  .Params.image_background_position }}
+
+{{ with $bgImg }}
+    {{ with ($.Site.GetPage (path.Dir .)).Resources.GetMatch (path.Base .) }}
+        {{ $img := .Resize "x1080 q80" }}
+        <section class="banner_sec mt boxs" style="background-image:url('{{ $.Site.BaseURL }}{{ $img.RelPermalink }}'); background-position:{{ $bgPos }};">
+    {{end}}
+{{end}}

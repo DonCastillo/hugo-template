@@ -1,0 +1,27 @@
+{{ $loginURL                :=      $.Site.Data.siteconfig.login_url }}
+{{ $loginText               :=      $.Site.Data.siteconfig.login_link_text }}
+{{ $socials                 :=      $.Site.Data.contact.social_media }}
+{{$currentPage := .}}
+
+<nav>
+    <ul class="page-nav">
+    {{$.Scratch.Set "counter" 0}}
+    {{range .Site.Menus.main}}
+        {{$.Scratch.Add "counter" 1}}
+        {{$counter := $.Scratch.Get "counter"}}
+        <li class="nav-item {{ if $currentPage.IsMenuCurrent "main" . }}current-item{{ end }}">
+            <hr class="dash white" style="margin: -3px -14px 5px -14px;">
+            <a href="{{.URL}}"
+            class="nav-link" 
+            title="{{.Name|urlize}}" 
+            role="menuitem" 
+            aria-posinset="{{$counter}}" 
+            aria-setsize="7" 
+            tabindex="-1" 
+            data-depth="0" 
+            data-index="{{$counter}}" 
+            data-size="7">{{.Name}}</a>    
+        </li>
+    {{end}}
+    </ul>
+</nav>
