@@ -12,6 +12,4 @@ show_page_image = true
 linkTitle = ""
 weight = 3
 [menu.main]
-weight = 3
-
 +++
